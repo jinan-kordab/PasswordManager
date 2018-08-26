@@ -1,0 +1,143 @@
+﻿@{
+
+	ViewBag.Title = "Home Page";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+	<script src="~/Scripts/md5.js"></script>
+
+	<style>
+		.element {
+			position: relative;
+		}
+
+			/*replace the content value with the
+		corresponding value from the list below*/
+
+			.element:before {
+				content: "\f000";
+				font-family: FontAwesome;
+				font-style: normal;
+				font-weight: normal;
+				text-decoration: inherit;
+				/*--adjust as necessary--*/
+				color: #000;
+				font-size: 18px;
+				padding-right: 0.5em;
+				position: absolute;
+				top: 10px;
+				left: 0;
+			}
+
+		body {
+			/*background: linear-gradient(orange, darkblue);*/
+		}
+
+		html {
+			height: 100%;
+		}
+
+		section {
+			background: transparent;
+			color: white;
+			border-radius: .5em;
+			padding: 1em;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			margin-right: -50%;
+			transform: translate(-50%, -50%);
+			width: 50%;
+		}
+	</style>
+
+</head>
+<body style="background: linear-gradient(to right, #3a1c71,#d76d77,#ffaf7b);">
+	<div class="center-box" style="position: absolute;border:0px solid gold;top: 50%;left: 50%;margin-right: -50%;transform: translate(-50%, -50%);min-width:320px">
+		<div class="card text-white bg-info" style="border:0px solid silver;background: linear-gradient(to right, #3a1c71,#d76d77,#ffaf7b);">
+			<h5 class="card-header">
+				Login
+			</h5>
+			<div class="card-body">
+				<div class="row">
+					<div class="col-md-12">
+						<input id="uName" class="form-control form-control-lg" type="text" style="width:100%;height:100%" placeholder="username">
+					</div>
+					<div class="col-md-12">
+						&nbsp;
+					</div>
+					<div class="col-md-12">
+						<input id="uPassword" class="form-control form-control-lg" type="password" placeholder="password">
+					</div>
+					<div class="col-md-12">
+						&nbsp;
+					</div>
+					<div class="col-md-12 text-right">
+						<button type="button" class="btn btn-secondary text-right" onclick="logInUser();">Login</button>
+						<button type="button" class="btn btn-secondary text-right" data-toggle="modal" data-target="#RegisterDialog">Register</button>
+					</div>
+				</div>
+			</div>
+			<div class="card-footer">
+			</div>
+		</div>
+	</div>
+
+	<div class="modal" id="RegisterDialog" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">REGISTER</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+
+					<div class="form-group">
+						<label class="col-form-label col-form-label-lg" for="inputLarge">First Name</label>
+						<input class="form-control form-control-lg" type="text" placeholder="first name" id="txtBoxFirstName">
+					</div>
+
+					<div class="form-group">
+						<label class="col-form-label col-form-label-lg" for="inputLarge">Last Name</label>
+						<input class="form-control form-control-lg" type="text" placeholder="last name" id="txtBoxLastName">
+					</div>
+
+					<div class="form-group">
+						<label class="col-form-label col-form-label-lg" for="inputLarge">Username</label>
+						<input class="form-control form-control-lg" type="text" placeholder="username" id="txtBoxUserName">
+					</div>
+
+					<div class="form-group">
+						<label class="col-form-label col-form-label-lg" for="inputLarge">Password</label>
+						<input class="form-control form-control-lg" type="password" placeholder="password" id="txtBoxPassword">
+					</div>
+											
+					<div class="form-group">
+						<label class="col-form-label col-form-label-lg" for="inputLarge">Confirm Password</label>
+						<input class="form-control form-control-lg" type="password" placeholder="password" id="txtBoxConfirmPassword">
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					@*<button type="button" class="btn btn-primary" onclick="AddNewUser();">Add</button>*@
+					<button type="button" class="btn btn-primary" onclick="a();">Add</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

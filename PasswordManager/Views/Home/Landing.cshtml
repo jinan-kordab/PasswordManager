@@ -1,0 +1,105 @@
+﻿@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container">
+	<div class="bs-docs-section">
+		<div class="row">
+			<div class="col-lg-8">
+				<div class="page-header">
+					<h3 id="indicators">Password Manager</h3>
+					
+				</div>
+			</div>
+			<div class="col-lg-4 text-lg-right" style="padding-top:8px">
+				<a href="#" onclick="logout(this);">log out</a>
+			</div>
+
+
+
+			</div>
+			<div class="row">
+				<div class="col-lg-4">
+					<div class="alert alert-dismissible alert-secondary">
+						To add new password, click the button below
+						<p class="text-primary text-right">
+							<button type="button" class="btn btn-primary my-2 my-sm-0" data-toggle="modal" data-target="#addNewPasswordMdl">Add new password</button>
+						</p>
+					</div>
+				</div>
+				<div class="col-lg-4">
+					<div class="alert alert-dismissible alert-success" id="viewPasswords">
+						To view all stored passwords, click the button below
+						<p class="text-primary text-right">
+							<button id="btnGetAllPwds" type="button" class="btn btn-secondary my-2 my-sm-0" onclick="getAllStoredPasswords();">View all stored passwords</button>
+						</p>
+					</div>
+				</div>
+				<div class="col-lg-4">
+					<div class="alert alert-dismissible alert-info" id="searchPasswords">
+						To search all your passwords, enter search phrase below:
+						<div class="row">
+							<div class="col-lg-10">
+								<input class="form-control form-control-md" style="width:100%" type="text" placeholder="type search phrase here" id="txtBoxSearch">
+							</div>
+							<div class="col-lg-2">
+								<div class="text-left">
+									<button type="button" id="btnSearch" class="btn btn-secondary my-2 my-sm-0" onclick="search(this);">Search</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">WEBSITE</th>
+								<th scope="col">USER NAME</th>
+								<th scope="col">PASSWORD</th>
+								<th scope="col" style="width:25%">OPTIONS</th>
+							</tr>
+						</thead>
+						<tbody id="allPswdsRows"></tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+</div>
+
+<div class="modal" id="addNewPasswordMdl" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">ADD NEW PASSWORD</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label class="col-form-label col-form-label-lg" for="inputLarge">Website</label>
+					<input class="form-control form-control-lg" type="text" placeholder="website name" id="txtBoxWebsite">
+				</div>
+				<div class="form-group">
+					<label class="col-form-label col-form-label-lg" for="inputLarge">User Name</label>
+					<input class="form-control form-control-lg" type="text" placeholder="your user name" id="txtBoxUserName">
+				</div>
+				<div class="form-group">
+					<label class="col-form-label col-form-label-lg" for="inputLarge">Password</label>
+					<input class="form-control form-control-lg" type="text" placeholder="your password" id="txtBoxPassword">
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" onclick="addNewPassword();">Add</button>
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+

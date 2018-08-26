@@ -1,0 +1,289 @@
+﻿
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+	<link href="~/mainpagebootstrap.css" rel="stylesheet" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="~/Scripts/md5.js"></script>
+	<script type="text/javascript">
+		var slt;
+		var hsh;
+
+		$(document).ready(function () {
+			var h = $("#viewPasswords").height();
+			$("#searchPasswords").height(h);
+		});
+
+		function logout(t) {
+
+			var xmlhttp = new XMLHttpRequest();
+			xmlhttp.onreadystatechange = function () {
+				if (this.readyState == 4 && this.status == 200) {
+					if (this.responseText == "{\"lout\":\"true\"}") {
+						window.open('@Url.Action("Login", "Home")', "_self");
+					}
+					else {
+						alert("Already logged out !");
+					}
+				}
+			};
+			xmlhttp.open("POST", "/Home/Logout");
+			xmlhttp.send();
+		}
+
+		function cancelEdit(t) {
+			$("#btnGetAllPwds").click();
+		}
+
+		function search(t) {
+			var searchPhraseByWebsite = $("#txtBoxSearch").val();
+			var xmlhttp = new XMLHttpRequest();
+			xmlhttp.onreadystatechange = function () {
+				if (this.readyState == 4 && this.status == 200) {
+					var myObj = JSON.parse(this.responseText);
+					var rows = myObj.length;
+					$("#allPswdsRows").html("<tr class=\"table-dark\"><th scope=\"row\"></th><td></td><td></td><td></td><td></td></tr>");
+					for (var i = 0; i < rows; i++) {
+						//for each row get values accordingly
+						var rowID = myObj[i]["ID"];
+						var website = myObj[i]["Website"];
+						var username = myObj[i]["UserName"];
+						var password = myObj[i]["Password1"];
+
+						var HtmlToAdd = "<tr class=\"table-dark\">";
+						HtmlToAdd += "<th scope=\"row\"><input type=\"hidden\" class=\"drid\" value=\"" + rowID + "\"" + (i + 1) + "</th>";
+						HtmlToAdd += "<td>" + website + "</td>";
+						HtmlToAdd += "<td>" + username + "</td>";
+						HtmlToAdd += "<td>" + password + "</td>";
+						HtmlToAdd += "<td><button style=\"width:100px\" type=\"button\" class=\"btn btn-primary my-2 my-sm-0\" data-toggle=\"modal\" onclick=\"editPartPassword(this);\">Edit</button>&nbsp;<button style=\"width:100px\" type=\"button\" class=\"btn btn-primary my-2 my-sm-0\" data-toggle=\"modal\" onclick=\"deleteRow(this);\">Delete</button></td>";
+						HtmlToAdd += "</tr>";
+						$("#allPswdsRows").append(HtmlToAdd);
+					}
+				}
+			};
+			xmlhttp.open("POST", "/Home/Search?sf=" + searchPhraseByWebsite);
+			xmlhttp.send();
+		}
+
+		function deleteRow(t) {
+			var rowIDtoDel = $(t).parents('tr').find('th input[type="hidden"]').val();
+								var xmlhttp = new XMLHttpRequest();
+								xmlhttp.onreadystatechange = function () {
+									if (this.readyState == 4 && this.status == 200) {
+										if (this.responseText == "{\"rowisdeleted\":\"true\"}") {
+											$("#btnGetAllPwds").click();
+										}
+										else {
+											alert("Could not delete !");
+										}
+									}
+								};
+								xmlhttp.open("POST", "/Home/DeleteRow?r=" + rowIDtoDel);
+								xmlhttp.send();
+		}
+
+		function updatePassword(t) {
+			var newPassword = $("#editingPassword").val();
+				var hashedpassword;
+				var xmlhttp = new XMLHttpRequest();
+				xmlhttp.onreadystatechange = function () {
+					if (this.readyState == 4 && this.status == 200) {
+						var rData = this.responseText;
+						var pHash = md5(newPassword + rData);
+						hashedpassword = pHash;
+								var newWebsiteValue = $("#editingWebsite").val();
+								var newUserName = $("#editingUsername").val();
+								var newPassword = $("#editingPassword").val();
+								var newRowID = $("#editingNewRowID").val();
+								var xmlhttp = new XMLHttpRequest();
+								xmlhttp.onreadystatechange = function () {
+									if (this.readyState == 4 && this.status == 200) {
+										$("#btnGetAllPwds").click();
+									}
+								};
+								xmlhttp.open("POST", "/Home/UpdateRow?w=" + newWebsiteValue + "&u=" + newUserName + "&p=" + newPassword + "&r=" + newRowID + "&h=" + hashedpassword);
+								xmlhttp.send();
+					}
+				};
+				xmlhttp.open("GET", "/Home/GetSalt?query=getmysalt&uval=" + new Date().getTime());
+				xmlhttp.send();
+		}
+
+		function editPartPassword(t) {
+			var rowIDtoEdit = $(t).parents('tr').find('th input[type="hidden"]').val();
+			var xmlhttp = new XMLHttpRequest();
+			xmlhttp.onreadystatechange = function () {
+				if (this.readyState == 4 && this.status == 200) {
+					var myObj = JSON.parse(this.responseText);
+					var rows = myObj.length;
+					$("#allPswdsRows").html("<tr class=\"table-dark\"><th scope=\"row\"></th><td></td><td></td><td></td><td></td></tr>");
+					for (var i = 0; i < rows; i++) {
+						//for each row get values accordingly
+						var rowID = myObj[i]["ID"];
+						var website = myObj[i]["Website"];
+						var username = myObj[i]["UserName"];
+						var password = myObj[i]["Password1"];
+						if (rowIDtoEdit == rowID) {
+							var HtmlToAdd = "<tr class=\"table-dark\">";
+							HtmlToAdd += "<th scope=\"row\"><input type=\"hidden\" id=\"editingNewRowID\"  class=\"drid\" value=\"" + rowID + "\"" + (i + 1) + "</th>";
+							HtmlToAdd += "<td><input class=\"form-control form-control-md\" style=\"width:100%\" type=\"text\" id=\"editingWebsite\" value=\"" + website + "\"></td>";
+							HtmlToAdd += "<td><input class=\"form-control form-control-md\" style=\"width:100%\" type=\"text\" id=\"editingUsername\" value=\"" + username + "\"></td>";
+							HtmlToAdd += "<td><input class=\"form-control form-control-md\" style=\"width:100%\" type=\"text\" id=\"editingPassword\" value=\"" + password + "\"></td>";
+							HtmlToAdd += "<td><button style=\"width:100px\" type=\"button\" class=\"btn btn-primary my-2 my-sm-0\" data-toggle=\"modal\" onclick=\"updatePassword(this);\">Update</button>&nbsp;<button style=\"width:100px\" type=\"button\" class=\"btn btn-primary my-2 my-sm-0\" data-toggle=\"modal\" onclick=\"cancelEdit(this);\">Cancel</button></td>";
+							HtmlToAdd += "</tr>";
+							$("#allPswdsRows").append(HtmlToAdd);
+						}
+						else {
+							var HtmlToAdd = "<tr class=\"table-dark\">";
+							HtmlToAdd += "<th scope=\"row\"><input type=\"hidden\" class=\"drid\" value=\"" + rowID + "\"" + (i + 1) + "</th>";
+							HtmlToAdd += "<td>" + website + "</td>";
+							HtmlToAdd += "<td>" + username + "</td>";
+							HtmlToAdd += "<td>" + password + "</td>";
+							HtmlToAdd += "<td><button style=\"width:100px\" type=\"button\" class=\"btn btn-primary my-2 my-sm-0\" data-toggle=\"modal\" onclick=\"editPartPassword(this);\">Edit</button>&nbsp;<button style=\"width:100px\" type=\"button\" class=\"btn btn-primary my-2 my-sm-0\" data-toggle=\"modal\" onclick=\"deleteRow(this);\">Delete</button></td>";
+							HtmlToAdd += "</tr>";
+							$("#allPswdsRows").append(HtmlToAdd);
+						}
+					}
+				}
+			};
+			xmlhttp.open("POST", "/Home/GetAllStoredPasswords");
+			xmlhttp.send();
+		}
+
+		function getAllStoredPasswords() {
+				var xmlhttp = new XMLHttpRequest();
+					xmlhttp.onreadystatechange = function () {
+						if (this.readyState == 4 && this.status == 200) {
+							var myObj = JSON.parse(this.responseText);
+							var rows = myObj.length;
+							$("#allPswdsRows").html("<tr class=\"table-dark\"><th scope=\"row\"></th><td></td><td></td><td></td><td></td></tr>");
+							for (var i = 0; i < rows; i++) {
+								//for each row get values accordingly
+								var rowID = myObj[i]["ID"];
+								var website = myObj[i]["Website"];
+								var username = myObj[i]["UserName"];
+								var password = myObj[i]["Password1"];
+
+								var HtmlToAdd = "<tr class=\"table-dark\">";
+								HtmlToAdd += "<th scope=\"row\"><input type=\"hidden\" class=\"drid\" value=\"" + rowID + "\"" + (i + 1) + "</th>";
+								HtmlToAdd += "<td>" + website + "</td>";
+								HtmlToAdd += "<td>" + username + "</td>";
+								HtmlToAdd += "<td>" + password + "</td>";
+								HtmlToAdd += "<td><button style=\"width:100px\" type=\"button\" class=\"btn btn-primary my-2 my-sm-0\" data-toggle=\"modal\" onclick=\"editPartPassword(this);\">Edit</button>&nbsp;<button style=\"width:100px\" type=\"button\" class=\"btn btn-primary my-2 my-sm-0\" data-toggle=\"modal\" onclick=\"deleteRow(this);\">Delete</button></td>";
+								HtmlToAdd += "</tr>";
+
+								$("#allPswdsRows").append(HtmlToAdd);
+							}
+						}
+					};
+					xmlhttp.open("POST", "/Home/GetAllStoredPasswords");
+					xmlhttp.send();
+		}
+
+		function addNewPassword()
+		{
+			var website = $("#addNewPasswordMdl #txtBoxWebsite").val();
+			var usrname = $("#addNewPasswordMdl #txtBoxUserName").val();
+			var passwd = $("#addNewPasswordMdl #txtBoxPassword").val();
+
+			var hashedpassword;
+
+				var xmlhttp = new XMLHttpRequest();
+				xmlhttp.onreadystatechange = function () {
+					if (this.readyState == 4 && this.status == 200) {
+						var rData = this.responseText;
+						var pHash = md5(passwd + rData);
+						hashedpassword = pHash;
+						var xmlhttp = new XMLHttpRequest();
+						xmlhttp.onreadystatechange = function () {
+							if (this.readyState == 4 && this.status == 200) {
+								var rData = this.responseText;
+								
+								if (rData == "{\"addnewpasswordstatus\":\"true\"}") {
+									alert("New password added successfully !");
+									window.open('@Url.Action("RedirectToLandingPage", "Home")', "_self");
+								}
+								else {
+									alert("User was not added");
+								}
+							}
+						};
+						xmlhttp.open("POST", "/Home/AddNewPassword?w=" + website + "&u=" + usrname + "&p=" + passwd + "&h=" + hashedpassword);
+						xmlhttp.send();
+					}
+				};
+				xmlhttp.open("GET", "/Home/GetSalt?query=getmysalt&uval=" + new Date().getTime());
+				xmlhttp.send();
+		}
+
+
+		function a() {
+			var fName = $("#txtBoxFirstName").val();
+			var lName = $("#txtBoxLastName").val();
+			var uName = $("#txtBoxUserName").val();
+			var uPass = $("#txtBoxPassword").val();
+			var uCPass = $("#txtBoxConfirmPassword").val();
+			var hashedpassword;
+			if (uPass == uCPass) {
+
+				var xmlhttp = new XMLHttpRequest();
+				xmlhttp.onreadystatechange = function () {
+					if (this.readyState == 4 && this.status == 200) {
+						var rData = this.responseText;
+						var pHash = md5(uPass + rData);
+						hashedpassword = pHash;
+						var xmlhttp = new XMLHttpRequest();
+						xmlhttp.onreadystatechange = function () {
+
+							if (this.readyState == 4 && this.status == 200) {
+								var rData = this.responseText;
+								
+								if (rData == "{\"regsuccess\":\"true\"}") {
+									alert("You have registered successfully !");
+									window.open('@Url.Action("RedirectToLoginForm", "Home")', "_self");
+								}
+								else {
+									alert("User was not added");
+								}
+							}
+						};
+						xmlhttp.open("POST", "/Home/RegisterNewUser?firstname=" + fName + "&lastname=" + lName + "&username=" + uName + "&upassword=" + uPass + "&pHash=" + hashedpassword);
+						xmlhttp.send();
+					}
+				};
+				xmlhttp.open("GET", "/Home/GetSalt?query=getmysalt&uval=" + new Date().getTime());
+				xmlhttp.send();
+			}
+			else {
+				alert("The passwords must match !");
+			}
+
+		}
+
+			function logInUser() {
+
+			var uName = $("#uName").val();
+			var uPass = $("#uPassword").val();
+					var xmlhttp = new XMLHttpRequest();
+					xmlhttp.onreadystatechange = function () {
+						if (this.readyState == 4 && this.status == 200) {
+							var rData = this.responseText;
+							if (rData == "{\"loginsuccess\":\"t\"}") {
+								window.open('@Url.Action("RedirectToLandingPage", "Home")', "_self");
+							}
+						}
+					};
+					xmlhttp.open("POST", "/Home/LogInUser?userName=" + uName + "&password=" + uPass);
+					xmlhttp.send();
+		}
+
+	</script>
+</head>
+<body>
+	@RenderBody()
+</body>
+</html>
